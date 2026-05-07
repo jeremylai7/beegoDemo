@@ -25,7 +25,18 @@ type UserReq struct {
 
 func (c *MainController) Post() {
 	var req UserReq
-	json.Unmarshal(c.Ctx.Input.RequestBody, &req)
+	// 解析成功，err 为空。解析失败，返回错误信息
+	err := json.Unmarshal(c.Ctx.Input.RequestBody, &req)
+	if err != nil {
+		c.Data["json"] = map[string]interface{}{
+			"success": false,
+			"code":    500,
+			"msg":     err,
+		}
+		c.ServeJSON()
+		return
+	}
+
 	fmt.Println(req.Username, req.Password)
 
 	c.Data["json"] = map[string]interface{}{
