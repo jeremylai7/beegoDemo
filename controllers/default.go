@@ -31,7 +31,7 @@ func (c *MainController) Post() {
 		c.Data["json"] = map[string]interface{}{
 			"success": false,
 			"code":    500,
-			"msg":     err,
+			"msg":     "参数错误",
 		}
 		c.ServeJSON()
 		return
