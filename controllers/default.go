@@ -64,3 +64,52 @@ func (c *MainController) Post() {
 	}
 	c.ServeJSON()
 }
+
+// 分页查询列表
+func (c *MainController) List() {
+	pageIndex, _ := c.GetInt("pageIndex", 1)
+	pageSize, _ := c.GetInt("pageSize", 10)
+	if pageIndex <= 0 {
+		pageIndex = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+
+	o := orm.NewOrm()
+
+	var users []models.User
+	qs := o.QueryTable(new(models.User))
+	total, err := qs.Count()
+	if err != nil {
+		c.Data["json"] = map[string]interface{}{
+			"success": false,
+			"code":    500,
+			"msg":     err.Error(),
+		}
+		c.ServeJSON()
+		return
+	}
+
+	_, err = qs.OrderBy("-id").Limit(pageSize, (pageIndex-1)*pageSize).All(&users)
+	if err != nil {
+		c.Data["json"] = map[string]interface{}{
+			"success": false,
+			"code":    500,
+			"msg":     err.Error(),
+		}
+		c.ServeJSON()
+		return
+	}
+
+	c.Data["json"] = map[string]interface{}{
+		"success":   true,
+		"code":      200,
+		"users":     users,
+		"total":     total,
+		"pageIndex": pageIndex,
+		"pageSize":  pageSize,
+	}
+	c.ServeJSON()
+
+}

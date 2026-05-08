@@ -18,6 +18,9 @@ func main() {
 }
 
 func init() {
+	// 打印 sql
+	orm.Debug = true
+
 	// 注册数据库
 	orm.RegisterDataBase(
 		"default",
@@ -30,7 +33,7 @@ func init() {
 
 	// 自动建表
 	// 第一个 true：没有表就创建
-	// 第二个 true：打印 SQL
+	// 第二个 true：建表打印 SQL
 	orm.RunSyncdb("default", false, true)
 
 }
