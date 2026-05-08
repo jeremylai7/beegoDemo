@@ -1,9 +1,12 @@
 package controllers
 
 import (
+	"awesomeProject1/models"
 	"encoding/json"
 	"fmt"
+	"time"
 
+	"github.com/beego/beego/v2/client/orm"
 	beego "github.com/beego/beego/v2/server/web"
 )
 
@@ -23,6 +26,7 @@ type UserReq struct {
 	Password string `json:"password"`
 }
 
+// 新增 User
 func (c *MainController) Post() {
 	var req UserReq
 	// 解析成功，err 为空。解析失败，返回错误信息
@@ -39,10 +43,24 @@ func (c *MainController) Post() {
 
 	fmt.Println(req.Username, req.Password)
 
+	o := orm.NewOrm()
+	user := new(models.User)
+	user.Name = req.Username
+	user.SubmitTime = time.Now()
+	id, err := o.Insert(user)
+	if err != nil {
+		c.Data["json"] = map[string]interface{}{
+			"success": false,
+			"code":    500,
+			"msg":     "新增失败" + err.Error(),
+		}
+	}
+
 	c.Data["json"] = map[string]interface{}{
 		"success": true,
 		"code":    200,
-		"msg":     "你传参 name 是" + req.Username,
+		"msg":     "新增成功",
+		"id":      id,
 	}
 	c.ServeJSON()
 }
