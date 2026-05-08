@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"awesomeProject1/models"
+	"awesomeProject1/vo"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -102,10 +103,21 @@ func (c *MainController) List() {
 		return
 	}
 
+	var result []vo.UserVo
+
+	for _, u := range users {
+		result = append(result, vo.UserVo{
+			Id:         u.Id,
+			Name:       u.Name,
+			Age:        u.Age,
+			SubmitTime: u.SubmitTime.Format("2006-01-02 15:04:05"),
+		})
+	}
+
 	c.Data["json"] = map[string]interface{}{
 		"success":   true,
 		"code":      200,
-		"users":     users,
+		"users":     result,
 		"total":     total,
 		"pageIndex": pageIndex,
 		"pageSize":  pageSize,
