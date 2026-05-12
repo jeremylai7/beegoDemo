@@ -45,6 +45,19 @@ func (c *MainController) Post() {
 	fmt.Println(req.Username, req.Password)
 
 	o := orm.NewOrm()
+
+	// 判断用户是否存在
+	exist := o.QueryTable(new(models.User)).Filter("Name", req.Username).Exist()
+	if exist {
+		c.Data["json"] = map[string]interface{}{
+			"success": false,
+			"code":    400,
+			"msg":     "name已存在",
+		}
+		c.ServeJSON()
+		return
+	}
+
 	user := new(models.User)
 	user.Name = req.Username
 	user.SubmitTime = time.Now()
